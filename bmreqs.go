@@ -9,6 +9,7 @@ const (
 	TR_CHAN
 	TR_SHAREDMEM
 	TR_EXIT
+	TEST
 )
 
 const (
