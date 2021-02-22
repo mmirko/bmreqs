@@ -1,3 +1,3 @@
 module github.com/mmirko/bmreqs
 
-go 1.15
+go 1.16
