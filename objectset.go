@@ -34,7 +34,9 @@ func (o *objectSet) insertReq(req string) error {
 	if o.bmReqMap == nil {
 		o.bmReqMap = make(map[string]bmReq)
 	}
-	o.bmReqMap[req] = nil
+	if req != "" {
+		o.bmReqMap[req] = nil
+	}
 	return nil
 }
 

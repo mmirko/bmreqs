@@ -56,9 +56,9 @@ func (rg *ReqGroup) run() {
 				if node, err := rg.decodeNode(req.Node); err == nil {
 					currMap := node.getReqMap()
 					if currMap == nil {
-						// TODO
+						node.insertReq("")
 					}
-					if reqSet, ok := node.getReqMap()[req.Name]; ok {
+					if reqSet, ok := currMap[req.Name]; ok {
 						if reqSet.getType() != req.T {
 							resp.Error = errors.New("Insert failed: Mismatch types")
 						} else {
