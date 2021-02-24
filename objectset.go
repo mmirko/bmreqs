@@ -1,12 +1,20 @@
 package bmreqs
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type objectSet struct {
 	name string
 	t    uint8
 	bmReqMap
 }
+
+func (o *objectSet) init() {
+	o.bmReqMap = make(map[string]bmReqSet)
+}
+
+//
 
 func (o *objectSet) getName() string {
 	return o.name
@@ -26,17 +34,15 @@ func (o *objectSet) setType(t uint8) error {
 	return nil
 }
 
-func (o *objectSet) getReqMap() bmReqMap {
-	return o.bmReqMap
-}
+//
 
 func (o *objectSet) insertReq(req string) error {
 	if o.bmReqMap == nil {
-		o.bmReqMap = make(map[string]bmReq)
+		o.bmReqMap = make(bmReqMap)
 	}
-	if req != "" {
-		o.bmReqMap[req] = nil
-	}
+	//	if req != "" {
+	o.bmReqMap[req] = nil
+	//	}
 	return nil
 }
 
@@ -49,20 +55,9 @@ func (o *objectSet) removeReq(req string) error {
 	return nil
 }
 
-func (o *objectSet) getReqs() string {
-	if o.bmReqMap == nil {
-		return ""
-	}
-	return fmt.Sprint(o.bmReqMap)
-}
-
-func (o *objectSet) supportSubReq() bool {
-	return true
-}
-
 func (o *objectSet) matchReq(req string) bool {
 	if o.bmReqMap == nil {
-		o.bmReqMap = make(map[string]bmReq)
+		return false
 	}
 	if _, ok := o.bmReqMap[req]; ok {
 		return true
@@ -70,7 +65,26 @@ func (o *objectSet) matchReq(req string) bool {
 	return false
 }
 
-func (o *objectSet) getSubReq(req string) bmReq {
+//
+
+func (o *objectSet) getReqs() string {
+	if o.bmReqMap == nil {
+		return ""
+	}
+	return fmt.Sprint(o.bmReqMap)
+}
+
+//
+
+func (o *objectSet) supportSubReq() bool {
+	return true
+}
+
+func (o *objectSet) getSubReqMap() bmReqMap {
+	return o.bmReqMap
+}
+
+func (o *objectSet) getSubReq(req string) bmReqSet {
 	if o.bmReqMap == nil {
 		return nil
 	}
@@ -78,4 +92,9 @@ func (o *objectSet) getSubReq(req string) bmReq {
 		return node
 	}
 	return nil
+}
+
+func (o *objectSet) setSubReq(req string, node string, ob bmReqSet) {
+	fmt.Println(req)
+	//	o.bmReqMap[req] = ob
 }
