@@ -7,7 +7,7 @@ import (
 
 func TestBMReq(t *testing.T) {
 
-	rg := NewReqGroup()
+	rg := NewReqRoot()
 
 	// Some errors
 	fmt.Println(rg.Requirement(ReqRequest{Node: "/", T: ObjectSet, Name: "processors", Op: 34}))

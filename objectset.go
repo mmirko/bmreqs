@@ -1,17 +1,18 @@
 package bmreqs
 
 import (
+	"errors"
 	"fmt"
 )
 
 type objectSet struct {
 	name string
 	t    uint8
-	bmReqMap
+	set  map[string]*bmReqObj
 }
 
 func (o *objectSet) init() {
-	o.bmReqMap = make(map[string]bmReqSet)
+	o.set = make(map[string]*bmReqObj)
 }
 
 //
@@ -37,64 +38,47 @@ func (o *objectSet) setType(t uint8) error {
 //
 
 func (o *objectSet) insertReq(req string) error {
-	if o.bmReqMap == nil {
-		o.bmReqMap = make(bmReqMap)
+	if o.set == nil {
+		return fmt.Errorf("Uninitialized Set")
 	}
-	//	if req != "" {
-	o.bmReqMap[req] = nil
-	//	}
+	newObj := new(bmReqObj)
+	newObj.init()
+	o.set[req] = newObj
 	return nil
 }
 
 func (o *objectSet) removeReq(req string) error {
-	if o.bmReqMap != nil {
-		if _, ok := o.bmReqMap[req]; ok {
-			delete(o.bmReqMap, req)
+	if o.set != nil {
+		if _, ok := o.set[req]; ok {
+			delete(o.set, req)
 		}
+	} else {
+		return errors.New("Uninitialized Set")
 	}
 	return nil
-}
-
-func (o *objectSet) matchReq(req string) bool {
-	if o.bmReqMap == nil {
-		return false
-	}
-	if _, ok := o.bmReqMap[req]; ok {
-		return true
-	}
-	return false
 }
 
 //
 
 func (o *objectSet) getReqs() string {
-	if o.bmReqMap == nil {
+	if o.set == nil {
 		return ""
 	}
-	return fmt.Sprint(o.bmReqMap)
+	return fmt.Sprint(o.set)
 }
 
 //
 
-func (o *objectSet) supportSubReq() bool {
+func (o *objectSet) supportSub() bool {
 	return true
 }
 
-func (o *objectSet) getSubReqMap() bmReqMap {
-	return o.bmReqMap
-}
-
-func (o *objectSet) getSubReq(req string) bmReqSet {
-	if o.bmReqMap == nil {
-		return nil
+func (o *objectSet) getSub(req string) (*bmReqObj, error) {
+	if o.set == nil {
+		return nil, errors.New("Uninitialized Set")
 	}
-	if node, ok := o.bmReqMap[req]; ok {
-		return node
+	if node, ok := o.set[req]; ok {
+		return node, nil
 	}
-	return nil
-}
-
-func (o *objectSet) setSubReq(req string, node string, ob bmReqSet) {
-	fmt.Println(req)
-	//	o.bmReqMap[req] = ob
+	return nil, nil
 }

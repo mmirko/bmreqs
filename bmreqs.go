@@ -18,16 +18,23 @@ type bmReqSet interface {
 	// Insert and remove requirements from/to the current node
 	insertReq(string) error
 	removeReq(string) error
-	matchReq(string) bool
 
 	// Exporting requirements for the current node
 	getReqs() string
 
 	// SubRequirements
-	supportSubReq() bool
-	getSubReqMap() bmReqMap
-	getSubReq(string) bmReqSet
-	setSubReq(string, string, bmReqSet)
+	supportSub() bool
+	getSub(string) (*bmReqObj, error)
 }
 
 type bmReqMap map[string]bmReqSet
+
+func (o *bmReqObj) init() {
+	if o.bmReqMap == nil {
+		o.bmReqMap = make(map[string]bmReqSet)
+	}
+}
+
+func (o *bmReqObj) getMap() bmReqMap {
+	return o.bmReqMap
+}

@@ -7,8 +7,7 @@ import (
 // Requirements types
 const (
 	// ObjectSet is the set-alike requirements
-	ObjectRoot = uint8(0) + iota
-	ObjectSet
+	ObjectSet = uint8(0) + iota
 )
 
 // Requirements operations
@@ -30,21 +29,23 @@ type ReqResponse struct {
 	Error error
 }
 
-// ReqGroup is the entry point data structure for all the bmreqs operations
-type ReqGroup struct {
+// ReqRoot is the entry point data structure for all the bmreqs operations
+type ReqRoot struct {
 	ask    chan ReqRequest
 	answer chan ReqResponse
 	ctx    context.Context
 	cancel context.CancelFunc
-	bmReqMap
+	obj    *bmReqObj
 }
 
-// NewReqGroup creates a new *ReqGroup object
-func NewReqGroup() *ReqGroup {
-	rg := new(ReqGroup)
+// NewReqRoot creates a new *ReqGroup object
+func NewReqRoot() *ReqRoot {
+	rg := new(ReqRoot)
 	rg.ask = make(chan ReqRequest)
 	rg.answer = make(chan ReqResponse)
-	rg.bmReqMap = make(map[string]bmReqSet)
+	obj := new(bmReqObj)
+	obj.init()
+	rg.obj = obj
 	ctx, cancel := context.WithCancel(context.Background())
 	rg.ctx = ctx
 	rg.cancel = cancel
@@ -52,12 +53,12 @@ func NewReqGroup() *ReqGroup {
 	return rg
 }
 
-func (rg *ReqGroup) Requirement(req ReqRequest) ReqResponse {
+func (rg *ReqRoot) Requirement(req ReqRequest) ReqResponse {
 	rg.ask <- req
 	return <-rg.answer
 
 }
 
-func (rg *ReqGroup) Close() {
+func (rg *ReqRoot) Close() {
 	rg.cancel()
 }
