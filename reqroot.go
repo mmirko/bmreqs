@@ -8,6 +8,7 @@ import (
 const (
 	// ObjectSet is the set-alike requirements
 	ObjectSet = uint8(0) + iota
+	ObjectMax
 )
 
 // Requirements operations

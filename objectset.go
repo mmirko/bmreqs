@@ -3,6 +3,7 @@ package bmreqs
 import (
 	"errors"
 	"fmt"
+	"strings"
 )
 
 type objectSet struct {
@@ -64,7 +65,11 @@ func (o *objectSet) getReqs() string {
 	if o.set == nil {
 		return ""
 	}
-	return fmt.Sprint(o.set)
+	keys := make([]string, 0, len(o.set))
+	for k := range o.set {
+		keys = append(keys, k)
+	}
+	return fmt.Sprint(strings.Join(keys, ","))
 }
 
 //

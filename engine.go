@@ -80,6 +80,16 @@ func (rg *ReqRoot) run() {
 							} else {
 								resp.Error = errors.New("Insert failed: " + fmt.Sprint(err))
 							}
+						case ObjectMax:
+							newReq := new(objectMax)
+							newReq.init()
+							newReq.setName(req.Name)
+							newReq.setType(ObjectMax)
+							if err := newReq.insertReq(req.Value); err == nil {
+								node.getMap()[req.Name] = newReq
+							} else {
+								resp.Error = errors.New("Insert failed: " + fmt.Sprint(err))
+							}
 						default:
 							resp.Error = errors.New("Unknown Type")
 						}
