@@ -63,6 +63,10 @@ func (o *objectMax) supportSub() bool {
 	return false
 }
 
+func (o *objectMax) listSub() []string {
+	return []string{}
+}
+
 func (o *objectMax) getSub(req string) (*bmReqObj, error) {
 	return nil, nil
 }

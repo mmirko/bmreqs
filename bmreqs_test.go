@@ -30,6 +30,11 @@ func TestBMReq(t *testing.T) {
 	fmt.Println(rg.Requirement(ReqRequest{Node: "/processors:cp0", T: ObjectMax, Name: "test3", Value: "52", Op: OpAdd}))
 	fmt.Println(rg.Requirement(ReqRequest{Node: "/processors:cp0", Name: "test3", Op: OpGet}))
 
+	fmt.Println("----")
+
+	fmt.Println(rg.Requirement(ReqRequest{Node: "/", Op: OpDump}))
+	//fmt.Println(rg.Requirement(ReqRequest{Node: "/processors:cp0", Op: OpDump}))
+
 	rg.Close()
 
 }

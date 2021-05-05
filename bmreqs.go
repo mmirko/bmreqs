@@ -24,6 +24,7 @@ type bmReqSet interface {
 
 	// SubRequirements
 	supportSub() bool
+	listSub() []string
 	getSub(string) (*bmReqObj, error)
 }
 

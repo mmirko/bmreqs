@@ -40,7 +40,7 @@ func (o *objectSet) setType(t uint8) error {
 
 func (o *objectSet) insertReq(req string) error {
 	if o.set == nil {
-		return fmt.Errorf("Uninitialized Set")
+		return fmt.Errorf("uninitialized Set")
 	}
 	newObj := new(bmReqObj)
 	newObj.init()
@@ -54,7 +54,7 @@ func (o *objectSet) removeReq(req string) error {
 			delete(o.set, req)
 		}
 	} else {
-		return errors.New("Uninitialized Set")
+		return errors.New("uninitialized Set")
 	}
 	return nil
 }
@@ -78,9 +78,21 @@ func (o *objectSet) supportSub() bool {
 	return true
 }
 
+func (o *objectSet) listSub() []string {
+	if o.set == nil {
+		return []string{}
+	}
+
+	keys := make([]string, 0, len(o.set))
+	for k := range o.set {
+		keys = append(keys, k)
+	}
+	return keys
+}
+
 func (o *objectSet) getSub(req string) (*bmReqObj, error) {
 	if o.set == nil {
-		return nil, errors.New("Uninitialized Set")
+		return nil, errors.New("uninitialized Set")
 	}
 	if node, ok := o.set[req]; ok {
 		return node, nil

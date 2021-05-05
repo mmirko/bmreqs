@@ -20,7 +20,7 @@ func (rg *ReqRoot) decodeNode(node string) (*bmReqObj, error) {
 		if leaf != "" {
 			decLeaf := strings.Split(leaf, ":")
 			if len(decLeaf) != 2 {
-				return nil, errors.New("Malformed node")
+				return nil, errors.New("malformed node")
 			}
 			lReq = decLeaf[0]
 			lName = decLeaf[1]
@@ -31,16 +31,16 @@ func (rg *ReqRoot) decodeNode(node string) (*bmReqObj, error) {
 						if newNode != nil {
 							currNode = newNode
 						} else {
-							return nil, errors.New("Node empty")
+							return nil, errors.New("node empty")
 						}
 					} else {
-						return nil, errors.New("Node not exists")
+						return nil, errors.New("node not exists")
 					}
 				} else {
-					return nil, errors.New("Requirement Set does not support sub requirements")
+					return nil, errors.New("requirement Set does not support sub requirements")
 				}
 			} else {
-				return nil, errors.New("Unknown Requirement Set")
+				return nil, errors.New("unknown Requirement Set")
 			}
 		}
 	}
@@ -62,7 +62,7 @@ func (rg *ReqRoot) run() {
 					currMap := node.getMap()
 					if reqSet, ok := currMap[req.Name]; ok {
 						if reqSet.getType() != req.T {
-							resp.Error = errors.New("Insert failed: Mismatch types")
+							resp.Error = errors.New("insert failed: Mismatch types")
 						} else {
 							if err := reqSet.insertReq(req.Value); err != nil {
 								resp.Error = errors.New("Insert failed: " + fmt.Sprint(err))
@@ -78,7 +78,7 @@ func (rg *ReqRoot) run() {
 							if err := newReq.insertReq(req.Value); err == nil {
 								node.getMap()[req.Name] = newReq
 							} else {
-								resp.Error = errors.New("Insert failed: " + fmt.Sprint(err))
+								resp.Error = errors.New("insert failed: " + fmt.Sprint(err))
 							}
 						case ObjectMax:
 							newReq := new(objectMax)
@@ -88,30 +88,60 @@ func (rg *ReqRoot) run() {
 							if err := newReq.insertReq(req.Value); err == nil {
 								node.getMap()[req.Name] = newReq
 							} else {
-								resp.Error = errors.New("Insert failed: " + fmt.Sprint(err))
+								resp.Error = errors.New("insert failed: " + fmt.Sprint(err))
 							}
 						default:
-							resp.Error = errors.New("Unknown Type")
+							resp.Error = errors.New("unknown Type")
 						}
 					}
 				} else {
-					resp.Error = errors.New("Node decoding failed: " + fmt.Sprint(err))
+					resp.Error = errors.New("node decoding failed: " + fmt.Sprint(err))
 				}
 			case OpGet:
 				if node, err := rg.decodeNode(req.Node); err == nil {
 					if reqSet, ok := node.getMap()[req.Name]; ok {
 						resp.Value = reqSet.getReqs()
 					} else {
-						resp.Error = errors.New("Set of requirements not found")
+						resp.Error = errors.New("set of requirements not found")
 					}
 				} else {
 					resp.Error = errors.New("Node decoding failed: " + fmt.Sprint(err))
 				}
+			case OpDump:
+				if result, err := rg.recursiveDump(req.Node); err == nil {
+					resp.Value = result
+				} else {
+					resp.Error = err
+				}
 			default:
-				resp.Error = errors.New("Unknown Operation")
+				resp.Error = errors.New("unknown Operation")
 			}
 
 			rg.answer <- resp
 		}
+	}
+}
+
+func (rg *ReqRoot) recursiveDump(node string) (string, error) {
+	if n, err := rg.decodeNode(node); err == nil {
+		result := ""
+		for name, set := range n.bmReqMap {
+			result += node[1:] + "/" + name + "[" + set.getReqs() + "]\n"
+			if set.supportSub() {
+				subs := set.listSub()
+				for _, sub := range subs {
+					sr, _ := rg.recursiveDump(node + "/" + name + ":" + sub)
+					list := strings.Split(sr, "\n")
+					for _, l := range list {
+						if l != "" {
+							result += l + "\n"
+						}
+					}
+				}
+			}
+		}
+		return result, nil
+	} else {
+		return "", errors.New("node decoding failed: " + fmt.Sprint(err))
 	}
 }
